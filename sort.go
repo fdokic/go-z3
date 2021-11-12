@@ -24,3 +24,11 @@ func (c *Context) IntSort() *Sort {
 		rawSort: C.Z3_mk_int_sort(c.raw),
 	}
 }
+
+// UninterpretedSort returns the uninterpreted type.
+func (c *Context) UninterpretedSort() *Sort {
+	return &Sort{
+		rawCtx:  c.raw,
+		rawSort: C.Z3_mk_uninterpreted_sort(c.raw),
+	}
+}
