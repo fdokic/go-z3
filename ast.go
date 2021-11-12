@@ -52,7 +52,7 @@ func (c *Context) FuncDecl(s *Symbol, domain []*Sort, rangeSort *Sort) *FDECL {
 			s.rawSymbol,
 			C.uint(l),
 			(*C.Z3_sort)(unsafe.Pointer(&dom[0])),
-			rangeSort),
+			rangeSort.rawSort),
 	}
 }
 
