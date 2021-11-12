@@ -65,7 +65,7 @@ func (c *Context) App(fdecl *FDECL, args []*AST) *AST {
 
 	return &AST{
 		rawCtx: c.raw,
-		rawAST: C.mk_app(
+		rawAST: C.Z3_mk_app(
 			c.raw,
 			fdecl.rawFunc,
 			C.uint(l),
