@@ -3,6 +3,7 @@ package z3
 // #include <stdlib.h>
 // #include "go-z3.h"
 import "C"
+import "unsafe"
 
 // AST represents an AST value in Z3.
 //
@@ -25,6 +26,50 @@ func (a *AST) DeclName() *Symbol {
 		rawCtx: a.rawCtx,
 		rawSymbol: C.Z3_get_decl_name(
 			a.rawCtx, C.Z3_to_func_decl(a.rawCtx, a.rawAST)),
+	}
+}
+
+//-------------------------------------------------------------------
+// func creation & application
+//-------------------------------------------------------------------
+
+type FDECL struct {
+	rawCtx  C.Z3_context
+	rawFunc C.Z3_func_decl
+}
+
+func (c *Context) FuncDecl(s *Symbol, domain []*Sort, rangeSort *Sort) *FDECL {
+	l := len(domain)
+	dom := make([]C.Z3_sort, l)
+	for i, d := range domain {
+		dom[i] = (*d).rawSort
+	}
+
+	return &FDECL{
+		rawCtx: c.raw,
+		rawFunc: C.Z3_mk_func_decl(
+			c.raw,
+			s.rawSymbol,
+			C.uint(l),
+			(*C.Z3_sort)(unsafe.Pointer(&dom[0])),
+			rangeSort),
+	}
+}
+
+func (c *Context) App(fdecl *FDECL, args []*AST) *AST {
+	l := len(args)
+	arg := make([]C.Z3_ast, l)
+	for i, a := range args {
+		arg[i] = (*a).rawAST
+	}
+
+	return &AST{
+		rawCtx: c.raw,
+		rawAST: C.mk_app(
+			c.raw,
+			fdecl.rawFunc,
+			C.uint(l),
+			(*C.Z3_ast)(unsafe.Pointer(&arg[0]))),
 	}
 }
 
